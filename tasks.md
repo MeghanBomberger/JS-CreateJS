@@ -26,7 +26,7 @@ Next, add a `script` tag for the `app.js` file.
 
 ### 1.2 - Listen for DOMContentLoaded
 
-`@listen-domcontentloaded`, open `app.js` and add an event listener to the `document`. Listen to the `DOMContentLoaded` event. The event handler should be an anonymous function.
+`@listen-domcontentloaded`, open `app.js` and add an event listener to the `document`. Listen for the `DOMContentLoaded` event. The event handler should be an anonymous function.
 
 ### 1.3 - Keycode Constants
 
