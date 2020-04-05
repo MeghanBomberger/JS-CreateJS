@@ -58,7 +58,7 @@ Next, add a `script` tag for the `app.js` file.
 
 ### 1.10 - Keyboard Listener
 
-`@keyboard-listener`, listen for when a user presses a key down. The handler should be called an anonymous function with an `event` argument.
+`@keyboard-listener`, listen for when a user presses a key down. The handler should call an anonymous function with an `event` argument.
 
 ### 1.11 - Switch Statement
 
