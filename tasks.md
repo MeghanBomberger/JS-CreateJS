@@ -34,11 +34,11 @@ Next, add a `script` tag for the `app.js` file.
 
 ### 1.4 - Create a Stage
 
-`@create-stage`, below the key code constants assign a constant called `stage` the value `new createjs Stage`. Make sure that you have the proper ID.
+`@create-stage`, below the key code constants assign a constant called `stage` a `new createjs Stage`. Make sure that you have the proper ID.
 
 ### 1.5 - Create a Shape
 
-`@shio-shape`, below the `stage` constant, assign a constant called `ship` the value `new createjs Shape`.
+`@shio-shape`, below the `stage` constant, assign a constant called `ship` a `new createjs Shape`.
 
 ### 1.6 - Draw a Ship Shape
 
