@@ -8,7 +8,6 @@ const check_expr = (obj, object_name, property_name, operator, right_value) => {
 }
 
 describe('Module 01 - Game Loop', () => {
-
   it('Reference an external script @external-script', () => {
     const srcs = $('script').map(function(i, el) { return this.attribs.src }).get();
     assert(srcs.includes('https://code.createjs.com/1.0.0/createjs.min.js'), 'Did you add a `script` tag for the Createjs library?');
@@ -23,9 +22,11 @@ describe('Module 01 - Game Loop', () => {
           /:property Identifier [ @name == 'addEventListener' ]
         ] &&
         /:arguments Literal [ @value == 'DOMContentLoaded' ]
-      ]`).length >= 1, 'Do you have an event listner that is listening for the `DOMContentLoaded` event.');
+      ]
+    `).length >= 1, 'Do you have an event listener that is listening for the `DOMContentLoaded` event.');
   });
-  it('Key code constants @keycode-constants', () => {
+
+  it('Keycode constants @keycode-constants', () => {
     assert(astq.query(ast,`
       // BlockStatement
         / VariableDeclaration [ @kind == 'const' ]
@@ -34,6 +35,7 @@ describe('Module 01 - Game Loop', () => {
             /:init Literal [ @value == 37 ]
           ]
     `).length >= 1, 'Do you have a constant called `KEYCODE_LEFT` set equal to `37`?');
+
     assert(astq.query(ast,`
       // BlockStatement
         / VariableDeclaration [ @kind == 'const' ]
@@ -42,7 +44,8 @@ describe('Module 01 - Game Loop', () => {
             /:init Literal [ @value == 38 ]
           ]
     `).length >= 1, 'Do you have a constant called `KEYCODE_UP` set equal to `38`?');
-     assert(astq.query(ast,`
+
+    assert(astq.query(ast,`
       // BlockStatement
         / VariableDeclaration [ @kind == 'const' ]
           / VariableDeclarator [ 
@@ -50,6 +53,7 @@ describe('Module 01 - Game Loop', () => {
             /:init Literal [ @value == 39 ]
           ]
     `).length >= 1, 'Do you have a constant called `KEYCODE_RIGHT` set equal to `39`?');
+
     assert(astq.query(ast,`
       // BlockStatement
         / VariableDeclaration [ @kind == 'const' ]
@@ -57,8 +61,9 @@ describe('Module 01 - Game Loop', () => {
             /:id Identifier [ @name == 'KEYCODE_DOWN' ] &&
             /:init Literal [ @value == 40 ]
           ]
-    `).length >= 1, 'Do you have a constant called `KEYCODE_DOWN` set equal to `37`?');
+    `).length >= 1, 'Do you have a constant called `KEYCODE_DOWN` set equal to `40`?');
   });
+
   it('Create a stage @create-stage', () => {
     const stage = astq.query(ast, `
       // BlockStatement
@@ -68,10 +73,12 @@ describe('Module 01 - Game Loop', () => {
             /:init NewExpression
           ]
     `);
-    assert(stage.length >= 1, 'Do you have a constant called `stage` set equal to a new `createjs.Sstage()`?');
-    assert(stage[0].init.callee.object.name === 'createjs' && stage[0].init.callee.property.name == 'Stage', 'Are you useing the `createjs.Stage` class?');
+
+    assert(stage.length >= 1, 'Do you have a constant called `stage` set equal to a new `createjs.Stage()`?');
+    assert(stage[0].init.callee.object.name === 'createjs' && stage[0].init.callee.property.name == 'Stage', 'Are you using the `createjs.Stage` class?');
     assert(stage[0].init.arguments[0].value === 'canvas', 'Are you providing the id of `canvas` to the Stage constructor?');
   });
+
   it('Create a shape @ship-shape', () => {
     const ship = astq.query(ast, `
       // BlockStatement
@@ -81,57 +88,70 @@ describe('Module 01 - Game Loop', () => {
             /:init NewExpression
           ]
     `);
+
     assert(ship.length >= 1, 'Do you have a constant called `ship` set equal to a new `createjs.Shape()`?');
-    assert(ship[0].init.callee.object.name === 'createjs' && ship[0].init.callee.property.name == 'Shape', 'Are you useing the `createjs.Shape` class?');
+    assert(ship[0].init.callee.object.name === 'createjs' && ship[0].init.callee.property.name == 'Shape', 'Are you using the `createjs.Shape` class?');
   });
+
   it('Draw the ship shape @draw-ship', () => {
     const calls = astq.query(ast, `
-        // BlockStatement
-          / ExpressionStatement
-            / CallExpression [ count(@arguments) >= 1 ]
+      // BlockStatement
+        / ExpressionStatement
+          / CallExpression [ count(@arguments) >= 1 ]
     `);
 
     const clean_calls = _.omitDeep(calls[0], ['start', 'end', 'raw', 'computed', 'type']);
     const flat_calls = _.index(clean_calls);
     const submission = _.values(flat_calls);
     const answer = ['ship', 'graphics', 'beginFill', 'white', 'moveTo', 0, 0, 'lineTo', 30, 15, 'lineTo', 0, 30, 'lineTo', 7.5, 15, 'lineTo', 0, 0];
+
     assert(_.isEqual(submission, answer), 'Are you drawing a `ship` path at the right points?');
   });
-  it('Add a shape to the stage @ship-addchild', () => {
+
+  it('Add a shape to the stage @ship-addChild', () => {
     const child = astq.query(ast,`
       // CallExpression [
         /:callee MemberExpression [
           /:property Identifier [ @name == 'addChild' ]
         ]
-      ]`);
+      ]
+    `);
     const stage = child[0].callee.object.name;
     const ship = child[0].arguments[0].name;
-    assert(child.length >= 1 && stage == 'stage' && ship == 'ship', 'Are you adding the `ship to the stage?');
+  
+    assert(child.length >= 1 && stage == 'stage' && ship == 'ship', 'Are you adding the `ship` to the `Stage`?');
   });
+
   it('Ticker event listener @ticker-event-listener', () => {
     const on = astq.query(ast,`
       // CallExpression [
         /:callee MemberExpression [
           /:property Identifier [ @name == 'on' ]
         ]
-      ]`);
+      ]
+    `);
     const cjs = on[0].callee.object.object.name;
     const ticker = on[0].callee.object.property.name;
+
     assert(on.length >= 1, 'Is `createjs.Ticker.on()` listening for the `tick` event.');
-    assert(cjs == 'createjs' && ticker == 'Ticker', 'Are you using the createjs.Ticker class?');
+    assert(cjs == 'createjs' && ticker == 'Ticker', 'Are you using the `createjs.Ticker` class?');
   });
+
   it('Ticker FPS @Ticker-fps', () => {
     const fps = astq.query(ast,`
       // CallExpression [
         /:callee MemberExpression [
           /:property Identifier [ @name == 'setFPS' ]
         ]
-      ]`);
+      ]
+    `);
     const cjs = fps[0].callee.object.object.name;
     const ticker = fps[0].callee.object.property.name;
+
     assert(fps.length >= 1, 'Are you setting the frames per second with `createjs.Ticker.setFPS()`');
-    assert(cjs == 'createjs' && ticker == 'Ticker', 'Are you using the createjs.Ticker class?');
+    assert(cjs == 'createjs' && ticker == 'Ticker', 'Are you using the `createjs.Ticker` class?');
   });
+
   it('Keyboard listener @keyboard-listener', () => {
     const keydown = astq.query(ast,`
       // CallExpression [
@@ -140,53 +160,64 @@ describe('Module 01 - Game Loop', () => {
           /:property Identifier [ @name == 'addEventListener' ]
         ] &&
         /:arguments Literal [ @value == 'keydown' ]
-      ]`);
-    assert(keydown.length >= 1, 'Do you have an event listner that is listening for the `keydown` event.');
+      ]
+    `);
+
+    assert(keydown.length >= 1, 'Do you have an event listener that is listening for the `keydown` event.');
   });
+
   it('Switch statement @switch-statement', () => {
     const switch_statement = astq.query(ast,`// SwitchStatement`);
     const switch_variable = switch_statement[0].discriminant.object.name + '.' + switch_statement[0].discriminant.property.name;
+  
     assert(switch_statement.length >= 1 && switch_variable == 'event.keyCode', 'Do you have a `switch` statement that is testing `event.keyCode`?');
   });
+  
   it('Left key @left-key', () => {
     const left = astq.query(ast,`
       // SwitchCase [
         /:test Identifier [ @name == 'KEYCODE_LEFT']
-      ]`);
+      ]
+    `);
 
     assert(left.length >= 1, 'Do you have a case in the switch statement for the left key?');
     assert(check_expr(left, 'ship', 'x', '-=', 15), 'Are you moving the ship to the `left` by `15` pixels?');
     assert( _.get(left, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
   });
+  
   it('Up key @up-key', () => {
     const up = astq.query(ast,`
       // SwitchCase [
         /:test Identifier [ @name == 'KEYCODE_UP']
-      ]`);
+      ]
+    `);
 
     assert(up.length >= 1, 'Do you have a case in the switch statement for the up key?');
     assert(check_expr(up, 'ship', 'y', '-=', 15), 'Are you moving the ship to the `up` by `15` pixels?');
-    assert( _.get(up, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
+    assert(_.get(up, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
   });
+  
   it('Right key @up-key', () => {
     const right = astq.query(ast,`
       // SwitchCase [
         /:test Identifier [ @name == 'KEYCODE_RIGHT']
-      ]`);
+      ]
+    `);
 
     assert(right.length >= 1, 'Do you have a case in the switch statement for the right key?');
     assert(check_expr(right, 'ship', 'x', '+=', 15), 'Are you moving the ship to the `right` by `15` pixels?');
-    assert( _.get(right, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
+    assert(_.get(right, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
   });
+  
   it('Down key @down-key', () => {
     const down = astq.query(ast,`
       // SwitchCase [
         /:test Identifier [ @name == 'KEYCODE_DOWN']
-      ]`);
+      ]
+    `);
 
     assert(down.length >= 1, 'Do you have a case in the switch statement for the down key?');
     assert(check_expr(down, 'ship', 'y', '+=', 15), 'Are you moving the ship to the `down` by `15` pixels?');
-    assert( _.get(down, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
+    assert(_.get(down, '[0].consequent[1].type') === 'BreakStatement', 'Do you have a `break` statement?');
   });
-
 });
